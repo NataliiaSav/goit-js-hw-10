@@ -16,7 +16,16 @@ function onInputCountry(e) {
     return (countryInfo.innerHTML = ''), (countryList.innerHTML = '');
   }
 
-  fetchCountries(name).then(countries => {});
+  fetchCountries(searchCountry).then(countries => {
+    if (countries.length > 10) {
+      Notify.info(
+        'Too many matches found. Please, enter a more specific name.'
+      );
+      return;
+    } else if (countries.length >= 2 && countries.length < 10) {
+      countryList.innerHTML = createMarkupList(countries);
+    }
+  });
 }
 function createMarkupList(countries) {
   return countries
