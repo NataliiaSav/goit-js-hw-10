@@ -16,23 +16,33 @@ function onInputCountry(e) {
     return (countryInfo.innerHTML = ''), (countryList.innerHTML = '');
   }
 
-  fetchCountries(searchCountry).then(countries => {
-    if (countries.length > 10) {
-      Notify.info(
-        'Too many matches found. Please, enter a more specific name.'
-      );
-      return;
-    } else if (countries.length >= 2 && countries.length < 10) {
-      countryList.innerHTML = createMarkupList(countries);
-    }
-  });
+  fetchCountries(searchCountry)
+    .then(countries => {
+      if (countries.length > 10) {
+        Notify.info(
+          'Too many matches found. Please, enter a more specific name.'
+        );
+        return;
+      } else if (countries.length >= 2 && countries.length < 10) {
+        countryInfo.innerHTML = '';
+        countryList.innerHTML = createMarkupList(countries);
+      } else if (countries.length === 1) {
+        countryList.innerHTML = '';
+        countryInfo.innerHTML = createMarkupInfo(countries);
+      }
+    })
+    .catch(error => {
+      countryList.innerHTML = '';
+      countryInfo.innerHTML = '';
+      Notify.failure('Oops, there is no country with that name');
+    });
 }
 function createMarkupList(countries) {
   return countries
     .map(
       ({ name, flags }) =>
-        ` <li">
-              <img  src="${flags.svg}" alt="Flag of ${name.official}" width = 30px height = 30px>
+        ` <li class="item">
+              <img  src="${flags.svg}" alt="Flag of ${name.official}" width = 40px height = 30px>
               <h2>${name.official}</h2></li> `
     )
     .join('');
@@ -40,17 +50,15 @@ function createMarkupList(countries) {
 function createMarkupInfo(countries) {
   return countries
     .map(
-      ({
-        name,
-        capital,
-        population,
-        flags,
-        languages,
-      }) => `<img src="${flags.svg}" alt="Flag of ${name}" width="320" height="auto">
-           <p> ${name.official}</p>
-            <p>Capital: <span> ${capital}</span></p>
-            <p>Population: <span> ${population}</span></p>
-            <p>Languages: <span> ${languages}</span></p>`
+      ({ name, capital, population, flags, languages }) =>
+        // console.log(languages)
+        `<img src="${flags.svg}" alt="Flag of ${name}" width="40" height="30">
+           <h2> ${name.official}</h2>
+            <p class="title">Capital: <span> ${capital}</span></p>
+            <p class="title">Population: <span> ${population}</span></p>
+            <p class="title">Languages: <span> ${Object.values(
+              languages
+            )}</span></p>`
     )
     .join('');
 }
